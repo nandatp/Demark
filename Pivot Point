@@ -1,0 +1,112 @@
+//@version=4
+study(title="DeMark Pivot Points", shorttitle="Pivot Point", overlay = true)
+
+
+// Function outputs 1 when it's the first bar of the D/W/M/Y
+is_newbar(res) =>
+    ch = 0
+    if(res == 'Y')
+        t  = year(time('D'))
+        ch := change(t) != 0 ? 1 : 0
+    else
+        t = time(res)
+        ch := change(t) != 0 ? 1 : 0
+    ch
+
+// Rounding levels to min tick
+nround(x) => 
+    n = round(x / syminfo.mintick) * syminfo.mintick
+
+
+
+sr = input(true, title="Show Daily Range")
+width = input(2, minval=1)
+xHigh  = security(syminfo.tickerid,"D", high[1])
+xLow   = security(syminfo.tickerid,"D", low[1])
+xClose = security(syminfo.tickerid,"D", close[1])
+xOpen = security(syminfo.tickerid,"D", open[1])
+//xP = iff(xClose < xOpen, xHigh + (2 * xLow) + xClose,
+//      iff(xClose > xOpen, (2 * xHigh) + xLow + xClose,
+//       iff(xClose == xOpen, xHigh + xLow + (2 * xClose), xClose)))
+
+xPP = 0,vR1 = 0,vS1 = 0, bars_sinse1 = 0, truerange = 0
+t1 = 0, t2 = 0,up1 = 0,up2 = 0, dn1 = 0, dn2 = 0, tolerance = 0, utol = 0, dtol = 0
+
+if(xClose < xOpen)
+    xP = xHigh + (2 * xLow) + xClose
+    xPP = xP / 4
+    vR1 = xP / 2 - xLow
+    vS1 = xP / 2 - xHigh
+    truerange = xHigh - xLow
+    t1 = truerange * 0.382
+    t2 = truerange * 0.618
+    up1 = xOpen+t1
+    up2 = xOpen+t2, dn1 = xOpen-t1, dn2 = xOpen-t2, tolerance = truerange * 0.15, utol = xOpen + tolerance, dtol = xOpen - tolerance
+    bars_sinse1 := is_newbar('D') ? 0 : bars_sinse1[1] + 1
+    vr2_p = line.new(bar_index[min(bars_sinse1, 300)], xPP, bar_index, xPP, color=color.blue,  style =  line.style_dotted, extend = extend.none, width = 2) 
+    line.delete(vr2_p[1]) 
+    vr3_p = line.new(bar_index[min(bars_sinse1, 300)], vR1, bar_index, vR1, color=color.red,  style =  line.style_dotted, extend = extend.none, width = 2) 
+    line.delete(vr3_p[1])
+    vr4_p = line.new(bar_index[min(bars_sinse1, 300)], vS1, bar_index, vS1, color=color.green,  style =  line.style_dotted, extend = extend.none, width = 2)
+    line.delete(vr4_p[1])
+    vr5_p = line.new(bar_index[min(bars_sinse1, 300)], up1, bar_index, up1, color=color.red,  style =  line.style_solid, extend = extend.none, width = 2)
+    line.delete(vr5_p[1]) 
+    vr6_p = line.new(bar_index[min(bars_sinse1, 300)], up2, bar_index, up2, color=color.red,  style =  line.style_solid, extend = extend.none, width = 2)
+    line.delete(vr6_p[1])
+    vr7_p = line.new(bar_index[min(bars_sinse1, 300)], dn1, bar_index, dn1, color=color.green,  style =  line.style_solid, extend = extend.none, width = 2)
+    line.delete(vr7_p[1])
+    vr8_p = line.new(bar_index[min(bars_sinse1, 300)], dn2, bar_index, dn2, color=color.green,  style =  line.style_solid, extend = extend.none, width = 2)
+    line.delete(vr8_p[1])
+    
+    
+if(xClose > xOpen)
+    xP = xHigh + (2 * xLow) + xClose
+    xPP = xP / 4
+    vR1 = xP / 2 - xLow
+    vS1 = xP / 2 - xHigh
+    truerange = xHigh - xLow
+    t1 = truerange * 0.382
+    t2 = truerange * 0.618
+    up1 = xOpen+t1
+    up2 = xOpen+t2, dn1 = xOpen-t1, dn2 = xOpen-t2, tolerance = truerange * 0.15, utol = xOpen + tolerance, dtol = xOpen - tolerance
+    bars_sinse1 := is_newbar('D') ? 0 : bars_sinse1[1] + 1
+    vr2_p = line.new(bar_index[min(bars_sinse1, 300)], xPP, bar_index, xPP, color=color.blue,  style =  line.style_dotted, extend = extend.none, width = 2) 
+    line.delete(vr2_p[1]) 
+    vr3_p = line.new(bar_index[min(bars_sinse1, 300)], vR1, bar_index, vR1, color=color.red,  style =  line.style_dotted, extend = extend.none, width = 2) 
+    line.delete(vr3_p[1])
+    vr4_p = line.new(bar_index[min(bars_sinse1, 300)], vS1, bar_index, vS1, color=color.green,  style =  line.style_dotted, extend = extend.none, width = 2)
+    line.delete(vr4_p[1])
+    vr5_p = line.new(bar_index[min(bars_sinse1, 300)], up1, bar_index, up1, color=color.red,  style =  line.style_solid, extend = extend.none, width = 2)
+    line.delete(vr5_p[1]) 
+    vr6_p = line.new(bar_index[min(bars_sinse1, 300)], up2, bar_index, up2, color=color.red,  style =  line.style_solid, extend = extend.none, width = 2)
+    line.delete(vr6_p[1])
+    vr7_p = line.new(bar_index[min(bars_sinse1, 300)], dn1, bar_index, dn1, color=color.green,  style =  line.style_solid, extend = extend.none, width = 2)
+    line.delete(vr7_p[1])
+    vr8_p = line.new(bar_index[min(bars_sinse1, 300)], dn2, bar_index, dn2, color=color.green,  style =  line.style_solid, extend = extend.none, width = 2)
+    line.delete(vr8_p[1])
+        
+if(xClose == xOpen)
+    xP = xHigh + (2 * xLow) + xClose
+    xPP = xP / 4
+    vR1 = xP / 2 - xLow
+    vS1 = xP / 2 - xHigh
+    truerange = xHigh - xLow
+    t1 = truerange * 0.382
+    t2 = truerange * 0.618
+    up1 = xOpen+t1
+    up2 = xOpen+t2, dn1 = xOpen-t1, dn2 = xOpen-t2, tolerance = truerange * 0.15, utol = xOpen + tolerance, dtol = xOpen - tolerance
+    bars_sinse1 := is_newbar('D') ? 0 : bars_sinse1[1] + 1
+    vr2_p = line.new(bar_index[min(bars_sinse1, 300)], xPP, bar_index, xPP, color=color.blue,  style =  line.style_dotted, extend = extend.none, width = 2) 
+    line.delete(vr2_p[1]) 
+    vr3_p = line.new(bar_index[min(bars_sinse1, 300)], vR1, bar_index, vR1, color=color.red,  style =  line.style_dotted, extend = extend.none, width = 2) 
+    line.delete(vr3_p[1])
+    vr4_p = line.new(bar_index[min(bars_sinse1, 300)], vS1, bar_index, vS1, color=color.green,  style =  line.style_dotted, extend = extend.none, width = 2)
+    line.delete(vr4_p[1])
+    vr5_p = line.new(bar_index[min(bars_sinse1, 300)], up1, bar_index, up1, color=color.red,  style =  line.style_solid, extend = extend.none, width = 2)
+    line.delete(vr5_p[1]) 
+    vr6_p = line.new(bar_index[min(bars_sinse1, 300)], up2, bar_index, up2, color=color.red,  style =  line.style_solid, extend = extend.none, width = 2)
+    line.delete(vr6_p[1])
+    vr7_p = line.new(bar_index[min(bars_sinse1, 300)], dn1, bar_index, dn1, color=color.green,  style =  line.style_solid, extend = extend.none, width = 2)
+    line.delete(vr7_p[1])
+    vr8_p = line.new(bar_index[min(bars_sinse1, 300)], dn2, bar_index, dn2, color=color.green,  style =  line.style_solid, extend = extend.none, width = 2)
+    line.delete(vr8_p[1])
